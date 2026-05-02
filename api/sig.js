@@ -1,23 +1,17 @@
 const { Resvg } = require('@resvg/resvg-js');
- 
+
 module.exports = async (req, res) => {
-  try {
-    const apiKey = process.env.TORN_API_KEY;
-    const response = await fetch(
-      `https://api.torn.com/user/?selections=profile&key=${apiKey}`
-    );
-    const data = await response.json();
- 
-    const level = data.level || '??';
-    const name = data.name || 'Xander35';
-    const statusRaw = data.last_action?.status || 'Offline';
-    const isOnline = statusRaw === 'Online';
-    const isIdle = statusRaw === 'Idle';
-    const statusText = isOnline ? 'ONLINE' : isIdle ? 'IDLE' : 'OFFLINE';
-    const statusColor = isOnline ? '#00ff88' : isIdle ? '#ffaa00' : '#ff4444';
-    const dotAlt = isOnline ? '#00cc66' : isIdle ? '#cc8800' : '#cc2222';
- 
-    const svg = `<svg viewBox="0 0 600 220" width="600" height="220" xmlns="http://www.w3.org/2000/svg">
+  // Get data from query params (passed by the redirect page)
+  const level = req.query.level || '??';
+  const name = req.query.name || 'Xander35';
+  const status = req.query.status || 'offline';
+  const isOnline = status === 'online';
+  const isIdle = status === 'idle';
+  const statusText = isOnline ? 'ONLINE' : isIdle ? 'IDLE' : 'OFFLINE';
+  const statusColor = isOnline ? '#00ff88' : isIdle ? '#ffaa00' : '#ff4444';
+  const dotAlt = isOnline ? '#00cc66' : isIdle ? '#cc8800' : '#cc2222';
+
+  const svg = `<svg viewBox="0 0 600 220" width="600" height="220" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#020d14"/>
@@ -142,18 +136,12 @@ module.exports = async (req, res) => {
     <rect x="427" y="182" width="5" height="8" rx="1" fill="#00ff88" fill-opacity="0.8"/>
   </g>
 </svg>`;
- 
-    const resvg = new Resvg(svg, { font: { loadSystemFonts: false } });
-    const pngData = resvg.render();
-    const pngBuffer = pngData.asPng();
- 
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.end(pngBuffer);
- 
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error: ' + err.message);
-  }
+
+  const resvg = new Resvg(svg, { font: { loadSystemFonts: false } });
+  const pngData = resvg.render();
+  const pngBuffer = pngData.asPng();
+
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.end(pngBuffer);
 };
