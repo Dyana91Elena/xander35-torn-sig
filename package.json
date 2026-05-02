@@ -1,0 +1,11 @@
+{
+  "name": "xander35-torn-sig",
+  "version": "1.0.0",
+  "description": "Dynamic Torn City signature for Xander35",
+  "dependencies": {
+    "canvas": "^2.11.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
